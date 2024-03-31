@@ -1,5 +1,7 @@
 from selenium import webdriver
 import chromedriver_autoinstaller
+import pytesseract
+from PIL import Image
 
 chrome_options = webdriver.ChromeOptions()
 chrome_options.add_argument('--headless') # ensure GUI is off
@@ -68,17 +70,46 @@ def detect_and_fetch_final_urls(image_path):
 
 
 def get_ingredients_from_url():
-  # Example usage
-  image_path = 'img_4599.jpg'
-  url = detect_and_fetch_final_urls(image_path)
-  url+="#ingredients"
-  driver.get(url)
-  content = driver.find_element(By.XPATH, "/html/body").text
-  pattern = r'Sustainability([\s\S]*?)Please'
-  matches = re.search(pattern, content)
-  result = ''.join(matches.group(1).strip())
-  result = result.split("\n")
-  return result
+    # Example usage
+    image_path = 'img_4599.jpg'
+    url = detect_and_fetch_final_urls(image_path)
+    url+="#ingredients"
+    driver.get(url)
+    content = driver.find_element(By.XPATH, "/html/body").text
+    pattern = r'Sustainability([\s\S]*?)Please'
+    matches = re.search(pattern, content)
+    result = ''.join(matches.group(1).strip())
+    result = result.split("\n")
+    return result
 
-result = get_ingredients_from_url()
+def image_to_text(image_path):
+    # Open the image
+    with open(image_path, 'rb') as img_file:
+        # Load image
+        image = Image.open(img_file)
+        # Perform OCR
+        text = pytesseract.image_to_string(image)
+        return text.strip()
+
+def get_ingredients_from_image(text):
+    pattern = r'INGREDIENTS:(.*)'
+
+    # Search for the pattern in the text
+    match = re.search(pattern, text)
+
+    # If a match is found, extract the text after "INGREDIENTS:"
+    if match:
+        extracted_text = match.group(1).strip()
+        print("INGREDIENTS in this product are")
+        print(extracted_text)
+    else:
+        print("Upload product image again")
+    
+    return extracted_text
+
+image_path = '/Imagetotext2.jpeg'
+text = image_to_text(image_path)  
+result = get_ingredients_from_image(text)
+
+# result = get_ingredients_from_url()
 print(result)
