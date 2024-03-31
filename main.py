@@ -42,7 +42,9 @@ table_info = {}
 
 # page markdown
 md = """
-<|layout|columns="1 1"
+<|layout|columns=1|
+<|first column
+<|container container-styling|
 # SafeByte
 <|{bg}|image|>
 #### SafeByte is an innovative application designed to promote healthier eating habits. By simply scanning the ingredients of a food item, SafeByte swiftly analyzes its nutritional content and alerts users to its health status. Through a user-friendly interface, it provides clear indications of whether the food is healthy or not, empowering individuals to make informed dietary choices on the go.
@@ -53,7 +55,9 @@ md = """
 <|{table_info}|table|show_all|rebuild|>
 <|content|>
 This application was created with [Taipy](https://www.taipy.io/).
->
+|>
+|>
+|>
 """
 
 # load qr image into memory
@@ -78,6 +82,7 @@ def load_ingredients(state):
     for item in parsed_data["items"]:
         for col, value in item.items():
             result_dict[col].append(value)
+    result_dict.pop("id")
     state.table_info = result_dict
 
 # invokes taipy
