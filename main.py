@@ -1,10 +1,5 @@
 from taipy.gui import Gui
 import json
-import scraper
-import glob
-import requests
-import os
-import json
 
 json_data = '''
 {
@@ -65,86 +60,30 @@ This application was created with [Taipy](https://www.taipy.io/).
 |>
 """
 
-import fact_table_loader
-
-fact_table = fact_table_loader.helper()
-print(len(fact_table))
-
 # load qr image into memory
 def load_qr(state):
-    # with open(state.path1, "rb") as f:
-      # state.data1 = f.read()
+    with open(state.path1, "rb") as f:
+      state.data1 = f.read()
       # do whatever has to be done with the qr image here
-    ingredients = scraper.get_ingredients_from_url(state.path1)
-    print(ingredients)
-    json_string = json.dumps(ingredients)
-
-    # Converting the string to a list
-    ingredients_list = json_string.split()
-
-    # Preparing the final JSON structure with the list of ingredients
-    filters_json = {
-        "filters": [ingredient.lower().replace('"', '').replace('[','') for ingredient in ingredients_list]
-    }
-
-    filters_json
-    print(filters_json)
-    # url = "http://127.0.0.1:8000/backend/query_dynamodb/"
-    print("---------------------")
-
-    for ing in filters_json['filters']:
-        if ing in fact_table:
-            print(fact_table[ing] , '\n')
-    # response = requests.post(url, headers=[], data={'filters': json.dumps(filters_json)})
-    # print(response.text)
-
-
-    # print("-------- ", )
-      # print(state.data1)
-
+      print(state.data1)
 
 # load ingredients image into memory
 def load_ingredients(state):
-      global table_info
-      with open(state.path2, "rb") as f:
-        state.data2 = f.read()
-      extracted_text = scraper.image_to_text(state.path2)
-      print("Extracted Text:")
-      cleaned_text = scraper.clean_text(extracted_text)
-      print("Cleaned Text:")
-      print(cleaned_text)
-      ingredients = cleaned_text
-      print("------- ", ingredients)
-      json_string = json.dumps(ingredients)
-      # Converting the string to a list
-      ingredients_list = json_string.split()
-
-      # Preparing the final JSON structure with the list of ingredients
-      filters_json = {
-          "filters": [ingredient.lower() for ingredient in ingredients_list]
-      }
-
-      filters_json
-      print(filters_json)
-      # url = "http://127.0.0.1:8000/backend/query_dynamodb/"
-      print("---------------------")
-
-      for ing in filters_json['filters']:
-          if ing in fact_table:
-              print(fact_table[ing] , '\n')
+    global table_info
+    with open(state.path2, "rb") as f:
+      state.data2 = f.read()
       # do whatever has to be done with the ingredients image here
 
-
-    # # ******* Table creation -- need to decide where/how this will be invoked *******
-    # # Parse JSON data and make dictionary
-    # parsed_data = json.loads(json_data)
-    # columns = parsed_data["items"][0].keys()
-    # result_dict = {col: [] for col in columns}
-    # for item in parsed_data["items"]:
-    #     for col, value in item.items():
-    #         result_dict[col].append(value)
-    # result_dict.pop("id")
-    # state.table_info = result_dict
+    # ******* Table creation -- need to decide where/how this will be invoked *******
+    # Parse JSON data and make dictionary
+    parsed_data = json.loads(json_data)
+    columns = parsed_data["items"][0].keys()
+    result_dict = {col: [] for col in columns}
+    for item in parsed_data["items"]:
+        for col, value in item.items():
+            result_dict[col].append(value)
+    result_dict.pop("id")
+    state.table_info = result_dict
 
 # invokes taipy
 Gui(md).run()

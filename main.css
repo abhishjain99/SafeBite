@@ -1,0 +1,10 @@
+.container-styling{
+  background-color: rgb(11, 24, 65);
+  color: rgb(172, 176, 189); 
+  border: 3px solid white; 
+  text-align: center; 
+  justify-content: center; 
+  align-items: center;
+  margin: auto; 
+  padding: 20px;
+}
