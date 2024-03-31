@@ -1,8 +1,10 @@
 # SafeBite
 Highlighting the safety aspect of eating by knowing what's in your food
 
+<b>This project is presented in [Diamond Hacks 2024]([url](https://www.ncsudiamondhacks.com)))</b>
+
 ## Inspiration
-Yesterday, when we were brainstorming problem statement for the hackathon, our team gathered over chips and soda. We were eating and thinking, and amidst our discussion, one of our “health-conscious” teammate was sharing “fascinating” insights about food ingredients and their potential facts and side effects. Many of us were unaware of these intricacies, which sparked an idea to develop a software solution that simplifies access to product-specific health information. (TBH, we were bored to listen him ranting all of the facts ;) 
+When we were brainstorming problem statement for the hackathon, our team gathered over chips and soda. We were eating and thinking, and amidst our discussion, one of our “health-conscious” teammate was sharing “fascinating” insights about food ingredients and their potential facts and side effects. Many of us were unaware of these intricacies, which sparked an idea to develop a software solution that simplifies access to product-specific health information. (TBH, we were bored to listen him ranting all of the facts ;) 
 
 
 ## What it does
