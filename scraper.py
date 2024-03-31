@@ -14,23 +14,69 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 import re
 
+from pyzbar.pyzbar import decode
+from PIL import Image
+import requests
+from bs4 import BeautifulSoup
+
+def fetch_final_url_and_extract_link(intermediate_url):
+    try:
+        # Send a GET request to the intermediate URL
+        response = requests.get(intermediate_url, allow_redirects=False)
+
+        # Check if there is a redirection
+        if response.status_code == 301 or response.status_code == 302:
+            # Extract the new location from the response headers
+            new_location = response.headers['Location']
+
+            # Recursively fetch the final URL using the new location
+            return fetch_final_url_and_extract_link(new_location)
+
+        # If there is no redirection, check if the URL is of interest
+        if not intermediate_url.startswith("http://smartlabel"):
+            # Perform web scraping to extract the link
+            soup = BeautifulSoup(response.content, 'html.parser')
+            divs = soup.find_all('div', class_='p-1')
+            for div in divs:
+                link = div.find('a')
+                if link:
+                    return link['href']
+
+        # Return the final URL
+        return intermediate_url
+    except requests.exceptions.MissingSchema:
+        return None
+
+def detect_and_fetch_final_urls(image_path):
+    # Open the image
+    with open(image_path, 'rb') as img_file:
+        # Load image
+        image = Image.open(img_file)
+        # Decode QR code
+        decoded_objects = decode(image)
+        
+        if decoded_objects:
+            for obj in decoded_objects:
+                intermediate_url = obj.data.decode('utf-8')
+                final_url = fetch_final_url_and_extract_link(intermediate_url)
+                if final_url:
+                    return final_url
+        else:
+            return "No QR code detected in the image."
+
+
+
+
 def get_ingredients_from_url():
-  url = "https://menu.pepsico.info/b5111082-25dd-401c-b801-690cba7ed711/index.html?cname=00028400048026_30056300_SunChips_BR&scantime=2024-03-30T20%3A07%3A17Z&utm_source=scanbuy&utm_campaign=smartlabel_scan&utm_medium=qrcode"
+  # Example usage
+  image_path = 'img_4599.jpg'
+  url = detect_and_fetch_final_urls(image_path)
+  url+="#ingredients"
   driver.get(url)
-
-  if not url.find("smartlabel"):
-    url = [my_elem.get_attribute("href") for my_elem in WebDriverWait(driver, 20).until(EC.visibility_of_all_elements_located((By.CSS_SELECTOR, "div[class='p-1'] > a[href]")))][0]
-    url = url + "#ingredients"
-  else:
-    url = 'https://smartlabel.mondelez.info/044000020170-0002-en-US/index.html?scantime=2024-03-30T19%3A25%3A07Z&utm_source=scanbuy&utm_campaign=smartlabel_scan&utm_medium=qrcode#ingredients'
-  driver.get(url)
-
   content = driver.find_element(By.XPATH, "/html/body").text
-
-  pattern = re.compile(r'(?<=Brand & Sustainability\n)(.*?)(?=Please refer)', re.DOTALL)
-  matches = re.findall(pattern, content)
-  result = ''.join(matches)
-  result = re.sub(r'\bAND/OR \b', '', result)
+  pattern = r'Sustainability([\s\S]*?)Please'
+  matches = re.search(pattern, content)
+  result = ''.join(matches.group(1).strip())
   result = result.split("\n")
   return result
 
