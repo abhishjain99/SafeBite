@@ -40,3 +40,5 @@ Tech Stack: Taipy, Python, OpenCV, Selenium, EasyOCR, Gemini AI, Dynamo DB
 - Scale the product to cater different types of food items
 - Better Frontend for better visualization
 - Increase our Database content
+
+![Flowchart](https://github.com/abhishjain99/SafeBite/blob/main/SafeBite%20Flowchart.png)
